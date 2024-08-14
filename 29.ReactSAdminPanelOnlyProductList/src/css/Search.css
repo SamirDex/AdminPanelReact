@@ -1,0 +1,19 @@
+.Searchbar{
+    width: 70%;
+    margin: 0 auto;
+    margin-top: 5rem; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0 .5rem;
+}
+.selectDiv{
+    width: 9rem;
+}
+.Search{
+    width: 70%;
+    flex-grow: 1;
+}
+.select{
+    width: 100%;
+}
