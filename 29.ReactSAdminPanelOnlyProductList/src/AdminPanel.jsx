@@ -13,6 +13,25 @@ function AdminPanel() {
     const [discont, setDiscount] = useState(false)
     const [sortByName, setSortByName] = useState(''); 
     const [sortByPrice, setSortByPrice] = useState(''); 
+    const [editingData, setEditingData] = useState(null); 
+
+    useEffect(() => {
+        axios("https://northwind.vercel.app/api/products/").then(res=> {
+            console.log(res.data);
+            setDatas(res.data); 
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    }, [])
+    
+    const handleSearch = (search) => {
+        setSearch(search);
+    };
+
+    const handleDiscount = ()=> {
+        setDiscount(!discont); 
+    }
 
     const handleSortByName = (order) => {
         setSortByName(order); 
@@ -22,8 +41,20 @@ function AdminPanel() {
         setSortByPrice(order); 
     }
 
-    const handleSearch = (search) => {
-        setSearch(search);
+    const handleEdit = (data) => {
+        setEditingData(data);
+    };
+
+    const handleSaveEdit = (updatedData) => {
+        axios.put(`https://northwind.vercel.app/api/products/${updatedData.id}`, updatedData)
+            .then(response => {
+                const updatedDatas = datas.map(data => data.id === updatedData.id ? updatedData : data);
+                setDatas(updatedDatas);
+                setEditingData(null);
+            })
+            .catch(error => {
+                console.error("Error saving edited data:", error);
+            });
     };
 
     const filteredDatas = datas.filter(item => {
@@ -39,6 +70,15 @@ function AdminPanel() {
         if(sortByPrice == "MaxtoMin") return b.unitPrice - a.unitPrice 
         
     });
+    const handleAddNewProduct = (newProduct) => {
+        axios.post("https://northwind.vercel.app/api/products", newProduct)
+            .then(response => {
+                setDatas([...datas, response.data]);
+            })
+            .catch(error => {
+                console.error("Error adding new product:", error);
+            });
+    }
 
     const handleDelete = (id) =>{
         let arr = [...datas]; 
@@ -47,26 +87,25 @@ function AdminPanel() {
         axios.delete("https://northwind.vercel.app/api/products/" + id);
     }
 
-    const handleDiscount = ()=> {
-        setDiscount(!discont); 
-    }
-
-    useEffect(() => {
-        axios("https://northwind.vercel.app/api/products/").then(res=> {
-            console.log(res.data);
-            setDatas(res.data); 
-        })
-        .catch(err => {
-            console.error(err);
-        });
-    }, [])
-
     return (
         <> 
             <ChakraProvider>
                 <div>
-                    <Search search={search} onSearch={handleSearch} onDiscount={handleDiscount} discont={discont} onhandleSortByPrice={handleSortByPrice} onhandleSortByName={handleSortByName}/>
-                    <TableList datas={filteredDatas} onDelete={handleDelete} />
+                    <Search 
+                        search={search} 
+                        onSearch={handleSearch}
+                        onDiscount={handleDiscount} 
+                        discont={discont} 
+                        onhandleSortByPrice={handleSortByPrice} 
+                        onhandleSortByName={handleSortByName} 
+                        editingData={editingData} 
+                        onSaveEdit={handleSaveEdit}
+                        onAddNewProduct={handleAddNewProduct} />
+
+                    <TableList 
+                        datas={filteredDatas} 
+                        onDelete={handleDelete} 
+                        onEdit={handleEdit}/>
                 </div>
             </ChakraProvider>
         </>

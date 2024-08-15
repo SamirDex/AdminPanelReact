@@ -6,7 +6,7 @@ import { Button } from '@chakra-ui/react'
 import {Table, Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer,} from '@chakra-ui/react'
 
 function TableList(props) {
-    const {datas, onDelete} = props; 
+    const {datas, onDelete, onEdit} = props; 
     return (
         <div className='container'>
             <TableContainer>
@@ -32,7 +32,7 @@ function TableList(props) {
                                     <Td isNumeric>${elem.unitPrice}</Td>
                                     <Td>{elem.discontinued? "YES" : "NO"}</Td>
                                     <Td>{elem.unitsInStock}</Td>
-                                    <Td><Button colorScheme='blue'>Edit</Button></Td>
+                                    <Td><Button colorScheme='blue' onClick={() => onEdit(elem)}>Edit</Button></Td>
                                     <Td><Button colorScheme='red' data-id={elem.id} onClick={() => onDelete(elem.id)}>Delete</Button></Td>
                                 </Tr>
                             )
